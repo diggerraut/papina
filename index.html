@@ -3,341 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ПАПИ́НА — FULL SYSTEM</title>
+    <title>ПАПИНА КОРПОРАЦИЯ — Система Управления</title>
     <style>
         :root {
-            --primary: #00d2ff;
-            --accent: #ff4757;
-            --bg: #0b0e14;
-            --card: rgba(255, 255, 255, 0.05);
-            --text: #ffffff;
+            --primary: #00d2ff; --accent: #ff4757; --gold: #ffc107;
+            --bg: #0b0e14; --glass: rgba(255, 255, 255, 0.05); --text: #ffffff;
         }
-
         body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            margin: 0; min-height: 100vh;
-            background-image: radial-gradient(circle at 50% 0%, #1e3a8a 0%, transparent 50%);
+            background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0;
+            background-image: radial-gradient(circle at 50% 0%, #1a2a6c, transparent 70%);
         }
-
         header {
-            backdrop-filter: blur(20px);
-            background: rgba(11, 14, 20, 0.8);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding: 1rem 5%;
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 1000;
+            backdrop-filter: blur(20px); background: rgba(11, 20, 30, 0.8);
+            padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--glass);
         }
-
-        .logo { font-size: 2rem; font-weight: 900; color: var(--primary); letter-spacing: -2px; cursor: pointer; }
-        .logo span { color: #fff; text-decoration: underline; }
-
         .container { max-width: 1200px; margin: 2rem auto; padding: 0 20px; }
-
+        .glass-panel {
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px; padding: 20px; backdrop-filter: blur(10px); margin-bottom: 20px;
+        }
         .btn {
-            background: var(--primary); color: #000; border: none; padding: 12px 24px;
+            background: var(--primary); color: #000; border: none; padding: 10px 20px;
             border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.2s;
         }
-        .btn:hover { transform: scale(1.05); filter: brightness(1.1); }
-
-        .glass-panel {
-            background: var(--card); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 24px; padding: 2rem; backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-        }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
-
-        .product-card {
-            background: var(--card); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; padding: 1.5rem; transition: 0.3s; position: relative;
-        }
-        .product-card:hover { border-color: var(--primary); box-shadow: 0 10px 30px rgba(0,210,255,0.2); }
-
-        input {
-            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);
-            color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin: 8px 0; box-sizing: border-box;
-        }
-
-        .profile-header {
-            display: flex; align-items: center; gap: 20px; margin-bottom: 20px;
-        }
-        .avatar {
-            width: 80px; height: 80px; background: var(--primary);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; font-weight: bold; color: #000;
-        }
-
-        .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .st-0 { background: #4b5563; }
-        .st-1 { background: #f59e0b; color: #000; }
-        .st-2 { background: #10b981; }
-
-        .hidden { display: none !important; }
+        .btn-gift { background: var(--gold); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         
-        #payment-modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            display: flex; align-items: center; justify-content: center; z-index: 2000;
+        /* Чат */
+        #chat-box { height: 300px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 15px; margin-bottom: 10px; }
+        .msg { margin-bottom: 10px; padding: 8px 12px; border-radius: 10px; max-width: 80%; }
+        .msg.admin { background: var(--accent); align-self: flex-start; }
+        .msg.user { background: var(--glass); align-self: flex-end; margin-left: auto; }
+
+        input, select {
+            background: rgba(255,255,255,0.07); border: 1px solid var(--glass);
+            color: #fff; padding: 12px; border-radius: 10px; width: 100%; margin: 5px 0;
         }
+        .hidden { display: none !important; }
+        .rank-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 5px; background: var(--primary); color: #000; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo" onclick="showPage('shop')">ПАП<span>И́</span>НА</div>
-    <div style="display: flex; gap: 15px; align-items: center;">
-        <div id="cart-info" class="hidden" style="cursor:pointer" onclick="showPage('cart')">🛒 <span id="cart-count">0</span></div>
-        <button id="nav-profile" class="btn hidden" onclick="showPage('profile')">Профиль</button>
-        <button id="nav-login" class="btn" onclick="showPage('auth')">Войти</button>
+    <div class="logo" onclick="showPage('shop')" style="font-size:1.8rem; font-weight:900; color:var(--primary); cursor:pointer;">ПАПИНА<span>'</span> КОРП</div>
+    <div style="display:flex; gap:15px; align-items:center;">
+        <div id="wallet-info" class="hidden" style="color:var(--gold); font-weight:bold;">💰 <span id="my-balance">0</span> ₽</div>
+        <button class="btn" onclick="showPage('profile')">Профиль / Чат</button>
     </div>
 </header>
 
 <div class="container">
     
     <section id="shop">
-        <h1 style="text-align:center; font-size: 2.5rem;">Народные товары</h1>
+        <h1 style="text-align:center;">Витрина Корпорации</h1>
         <div id="product-grid" class="grid"></div>
-    </section>
-
-    <section id="auth" class="hidden">
-        <div class="glass-panel" style="max-width: 400px; margin: auto;">
-            <h2 id="auth-title">Вход в систему</h2>
-            <input type="text" id="auth-user" placeholder="Логин">
-            <input type="password" id="auth-pass" placeholder="Пароль">
-            <button class="btn" style="width:100%" onclick="handleAuth()">Продолжить</button>
-            <p style="text-align:center; font-size: 14px; cursor:pointer; color: var(--primary)" onclick="toggleAuthMode()" id="auth-toggle-text">Нет аккаунта? Создать</p>
-        </div>
     </section>
 
     <section id="profile" class="hidden">
         <div class="glass-panel">
-            <div class="profile-header">
-                <div class="avatar" id="prof-avatar">?</div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
-                    <h2 id="prof-name" style="margin:0">Имя пользователя</h2>
-                    <p id="prof-role" style="color: var(--primary); margin: 5px 0;">Покупатель</p>
+                    <h2 id="user-name-display">Загрузка...</h2>
+                    <span id="user-rank" class="rank-badge">Загрузка...</span>
                 </div>
-                <button class="btn" onclick="logout()" style="margin-left: auto; background: var(--accent); color: white;">Выйти</button>
+                <button class="btn" onclick="logout()" style="background:var(--accent); color:white;">Выйти</button>
             </div>
-            <hr style="opacity:0.1">
-            
-            <div id="admin-tools" class="hidden">
-                <h3 style="color: var(--accent)">🔨 Мастерская Папина</h3>
+
+            <div id="director-controls" class="hidden" style="margin-top:20px; border-top: 1px solid #333; padding-top:20px;">
+                <h3 style="color:var(--gold)">💼 Кабинет Директора (Баланс: 1 000 000 000 ₽)</h3>
+                <div class="grid">
+                    <div class="glass-panel">
+                        <h4>Добавить товар</h4>
+                        <input type="text" id="add-name" placeholder="Название">
+                        <input type="number" id="add-price" placeholder="Цена">
+                        <button class="btn" style="width:100%" onclick="api.addProduct()">Опубликовать</button>
+                    </div>
+                    <div class="glass-panel">
+                        <h4>Управление персоналом</h4>
+                        <div id="staff-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="worker-controls" class="hidden" style="margin-top:20px; background: rgba(0,210,255,0.1); padding:15px; border-radius:15px;">
+                <h3>🎁 Подарки от Директора</h3>
+                <p>Ваш бонусный счет: <b id="bonus-balance">0</b> ₽</p>
+                <p style="font-size:0.8rem;">Эти деньги можно тратить на любые товары в магазине!</p>
+            </div>
+
+            <div class="glass-panel" style="margin-top:20px;">
+                <h3>💬 Рабочий чат</h3>
+                <div id="chat-box"></div>
                 <div style="display:flex; gap:10px;">
-                    <input type="text" id="new-p-name" placeholder="Название товара">
-                    <input type="number" id="new-p-price" placeholder="Цена">
-                    <button class="btn" onclick="addNewProduct()">Выставить на продажу</button>
+                    <input type="text" id="chat-input" placeholder="Введите сообщение...">
+                    <button class="btn" onclick="api.sendMsg()">Отправить</button>
                 </div>
-                <h4>Все заказы клиентов:</h4>
-                <div id="admin-orders-list"></div>
-            </div>
-
-            <h3>История моих заказов:</h3>
-            <div id="user-orders-list"></div>
-        </div>
-    </section>
-
-    <section id="cart" class="hidden">
-        <div class="glass-panel" style="max-width: 600px; margin: auto;">
-            <h2>Ваша корзина</h2>
-            <div id="cart-items"></div>
-            <div style="text-align:right; margin-top:20px;">
-                <h3 id="total-price">Итого: 0 ₽</h3>
-                <button class="btn" onclick="showPayment()">Оформить через СБП</button>
             </div>
         </div>
     </section>
 
-</div>
+    <section id="auth" class="hidden">
+        <div class="glass-panel" style="max-width:400px; margin:auto; text-align:center;">
+            <h2>Вход / Регистрация</h2>
+            <input type="text" id="login-u" placeholder="Ваше имя">
+            <input type="password" id="login-p" placeholder="Пароль">
+            <button class="btn" style="width:100%" onclick="api.login()">Войти в систему</button>
+            <p style="font-size:0.8rem; opacity:0.6; margin-top:10px;">Пароль для аккаунта "Папина" — 112112</p>
+        </div>
+    </section>
 
-<div id="payment-modal" class="hidden">
-    <div class="glass-panel" style="max-width: 450px; text-align: center;">
-        <h1>Оплата заказа</h1>
-        <img src="oplata.jpg" style="width:200px; border-radius:15px; margin-bottom:15px; border: 2px solid var(--primary);">
-        <p>Введите номер карты Папина для скидки 5%:</p>
-        <input type="text" id="card-input" placeholder="0000 0000 0000 0000">
-        <h2 id="pay-sum" style="color:var(--primary)"></h2>
-        <p style="font-size:12px; opacity:0.6;">Сканируйте QR и отправляйте деньги. Постараюсь доставить быстро!</p>
-        <button class="btn" style="width:100%" onclick="confirmOrder()">ОПЛАТИТЬ</button>
-        <button class="btn" style="background:none; color:white;" onclick="document.getElementById('payment-modal').classList.add('hidden')">НАЗАД</button>
-    </div>
 </div>
 
 <script>
-    // --- Инициализация БД ---
-    let users = JSON.parse(localStorage.getItem('pap_users')) || {};
-    let products = JSON.parse(localStorage.getItem('pap_global_products')) || [];
-    let orders = JSON.parse(localStorage.getItem('pap_global_orders')) || [];
-    let currentUser = JSON.parse(sessionStorage.getItem('pap_active_user')) || null;
-    let cart = [];
-    let isLoginMode = true;
+    // --- ПСЕВДО-БАЗА ДАННЫХ ---
+    // (В реальном мире здесь были бы запросы к серверу)
+    const DB = {
+        getUsers: () => JSON.parse(localStorage.getItem('corp_users')) || {},
+        saveUsers: (data) => localStorage.setItem('corp_users', JSON.stringify(data)),
+        getProducts: () => JSON.parse(localStorage.getItem('corp_prods')) || [],
+        saveProducts: (data) => localStorage.setItem('corp_prods', JSON.stringify(data)),
+        getChat: () => JSON.parse(localStorage.getItem('corp_chat')) || [],
+        saveChat: (data) => localStorage.setItem('corp_chat', JSON.stringify(data))
+    };
 
-    const validCards = ["2200 9183 4742 6324", "2200 4332 3424 3543 8641"];
-    const statuses = ["Обработка товара", "Доставление товара", "Можно забирать"];
+    let currentUser = JSON.parse(sessionStorage.getItem('active_user'));
+    const RANKS = ["Покупатель", "Новичок", "Профессионал", "Кассир ++", "Главный работник", "Директор магазина"];
 
-    // --- Роутинг ---
-    function showPage(p) {
-        document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-        document.getElementById(p).classList.remove('hidden');
-        if(p === 'shop') renderShop();
-        if(p === 'profile') renderProfile();
-        if(p === 'cart') renderCart();
-    }
+    const api = {
+        login: () => {
+            const u = document.getElementById('login-u').value;
+            const p = document.getElementById('login-p').value;
+            if(!u || !p) return;
 
-    // --- Авторизация ---
-    function toggleAuthMode() {
-        isLoginMode = !isLoginMode;
-        document.getElementById('auth-title').innerText = isLoginMode ? "Вход в систему" : "Регистрация";
-        document.getElementById('auth-toggle-text').innerText = isLoginMode ? "Нет аккаунта? Создать" : "Уже есть аккаунт? Войти";
-    }
+            let users = DB.getUsers();
+            if(!users[u]) {
+                // Регистрация
+                users[u] = { 
+                    pass: p, 
+                    rank: (u === "Папина") ? 5 : 0, 
+                    balance: (u === "Папина") ? 1000000000 : 0 
+                };
+                DB.saveUsers(users);
+            } else if(users[u].pass !== p) {
+                return alert("Неверный пароль!");
+            }
 
-    function handleAuth() {
-        const u = document.getElementById('auth-user').value.trim();
-        const p = document.getElementById('auth-pass').value.trim();
-        if(!u || !p) return alert("Заполни поля!");
+            currentUser = { name: u, ...users[u] };
+            sessionStorage.setItem('active_user', JSON.stringify(currentUser));
+            location.reload();
+        },
 
-        if(isLoginMode) {
-            if(users[u] && users[u].pass === p) {
-                currentUser = { name: u, role: users[u].role };
-                sessionStorage.setItem('pap_active_user', JSON.stringify(currentUser));
-                location.reload();
-            } else { alert("Неверный логин или пароль!"); }
-        } else {
-            if(users[u]) return alert("Такой ник занят!");
-            users[u] = { pass: p, role: (u === "Папина" && p === "112112") ? "admin" : "user" };
-            localStorage.setItem('pap_users', JSON.stringify(users));
-            alert("Регистрация успешна! Теперь войдите.");
-            toggleAuthMode();
+        addProduct: () => {
+            const n = document.getElementById('add-name').value;
+            const p = document.getElementById('add-price').value;
+            if(!n || !p) return;
+            let prods = DB.getProducts();
+            prods.push({ id: Date.now(), name: n, price: parseInt(p) });
+            DB.saveProducts(prods);
+            location.reload();
+        },
+
+        sendMsg: () => {
+            const text = document.getElementById('chat-input').value;
+            if(!text) return;
+            let chat = DB.getChat();
+            chat.push({ user: currentUser.name, text: text, role: currentUser.rank });
+            DB.saveChat(chat);
+            document.getElementById('chat-input').value = '';
+            renderChat();
+        },
+
+        giveMoney: (userName) => {
+            const amount = prompt("Сколько денег подарить работнику?");
+            if(!amount || isNaN(amount)) return;
+            let users = DB.getUsers();
+            users[userName].balance += parseInt(amount);
+            DB.saveUsers(users);
+            alert("Подарок отправлен!");
+            renderProfile();
+        },
+
+        setRank: (userName, rankIdx) => {
+            let users = DB.getUsers();
+            users[userName].rank = parseInt(rankIdx);
+            DB.saveUsers(users);
+            renderProfile();
         }
+    };
+
+    function renderShop() {
+        const grid = document.getElementById('product-grid');
+        const prods = DB.getProducts();
+        grid.innerHTML = prods.map(p => `
+            <div class="glass-panel">
+                <h3>${p.name}</h3>
+                <div style="font-size:1.5rem; color:var(--primary); font-weight:bold;">${p.price} ₽</div>
+                <button class="btn" style="width:100%; margin-top:10px;" onclick="buyItem(${p.price})">Купить</button>
+            </div>
+        `).join('');
     }
 
-    function logout() {
-        sessionStorage.removeItem('pap_active_user');
+    function buyItem(price) {
+        if(!currentUser) return showPage('auth');
+        let users = DB.getUsers();
+        if(users[currentUser.name].balance < price) return alert("Недостаточно подарочных денег!");
+        
+        users[currentUser.name].balance -= price;
+        DB.saveUsers(users);
+        alert("Покупка совершена за счет подарков!");
         location.reload();
     }
 
-    // --- Магазин ---
-    function renderShop() {
-        const grid = document.getElementById('product-grid');
-        grid.innerHTML = products.length ? products.map(p => `
-            <div class="product-card">
-                <h3>${p.name}</h3>
-                <div style="font-size: 1.5rem; color: var(--primary); font-weight: bold;">${p.price} ₽</div>
-                <button class="btn" style="width:100%; margin-top:10px" onclick="addToCart(${p.id})">В корзину</button>
+    function renderChat() {
+        const box = document.getElementById('chat-box');
+        const chat = DB.getChat();
+        box.innerHTML = chat.map(m => `
+            <div class="msg ${m.role === 5 ? 'admin' : 'user'}">
+                <small>${m.user} [${RANKS[m.role]}]</small><br>${m.text}
             </div>
-        `).join('') : "<h3 style='grid-column: 1/-1; text-align:center; opacity:0.5'>Витрина пуста. Ждем Папина...</h3>";
+        `).join('');
+        box.scrollTop = box.scrollHeight;
     }
 
-    function addNewProduct() {
-        const n = document.getElementById('new-p-name').value;
-        const p = document.getElementById('new-p-price').value;
-        if(!n || !p) return;
-        products.push({ id: Date.now(), name: n, price: parseInt(p) });
-        localStorage.setItem('pap_global_products', JSON.stringify(products));
-        renderShop();
-        renderProfile();
-    }
-
-    function addToCart(id) {
-        if(!currentUser) return showPage('auth');
-        cart.push(products.find(x => x.id === id));
-        updateCartBtn();
-        alert("Добавлено в корзину!");
-    }
-
-    function updateCartBtn() {
-        document.getElementById('cart-info').classList.toggle('hidden', !currentUser);
-        document.getElementById('cart-count').innerText = cart.length;
-    }
-
-    // --- Профиль ---
     function renderProfile() {
-        if(!currentUser) return showPage('auth');
-        document.getElementById('prof-name').innerText = currentUser.name;
-        document.getElementById('prof-avatar').innerText = currentUser.name[0].toUpperCase();
-        document.getElementById('prof-role').innerText = currentUser.role === 'admin' ? "👑 Владелец магазина" : "🛒 Покупатель";
-        
-        const adminTools = document.getElementById('admin-tools');
-        if(currentUser.role === 'admin') {
-            adminTools.classList.remove('hidden');
-            document.getElementById('admin-orders-list').innerHTML = orders.map(o => `
-                <div class="glass-panel" style="padding:10px; margin-top:10px; font-size:14px;">
-                    <b>${o.user}</b>: ${o.items} (${o.total}₽) <br>
-                    Статус: <select onchange="changeStatus(${o.id}, this.value)">
-                        ${statuses.map((s, i) => `<option value="${i}" ${o.status == i ? 'selected' : ''}>${s}</option>`).join('')}
+        if(!currentUser) return;
+        const uData = DB.getUsers()[currentUser.name];
+        document.getElementById('user-name-display').innerText = currentUser.name;
+        document.getElementById('user-rank').innerText = RANKS[uData.rank];
+        document.getElementById('my-balance').innerText = uData.balance.toLocaleString();
+        document.getElementById('wallet-info').classList.remove('hidden');
+
+        if(uData.rank === 5) {
+            document.getElementById('director-controls').classList.remove('hidden');
+            const staffList = document.getElementById('staff-list');
+            const allUsers = DB.getUsers();
+            staffList.innerHTML = Object.keys(allUsers).filter(name => name !== 'Папина').map(name => `
+                <div style="margin-bottom:10px; padding:10px; border-bottom:1px solid #333">
+                    <b>${name}</b> [${RANKS[allUsers[name].rank]}]<br>
+                    <select onchange="api.setRank('${name}', this.value)">
+                        ${RANKS.slice(0, 5).map((r, i) => `<option value="${i}" ${allUsers[name].rank === i ? 'selected' : ''}>${r}</option>`).join('')}
                     </select>
+                    <button class="btn btn-gift" onclick="api.giveMoney('${name}')">🎁 Премия</button>
                 </div>
             `).join('');
+        } else if(uData.rank > 0) {
+            document.getElementById('worker-controls').classList.remove('hidden');
+            document.getElementById('bonus-balance').innerText = uData.balance.toLocaleString();
         }
-
-        const myOrders = orders.filter(o => o.user === currentUser.name);
-        document.getElementById('user-orders-list').innerHTML = myOrders.length ? myOrders.map(o => `
-            <div style="padding:15px; border-bottom:1px solid rgba(255,255,255,0.1)">
-                <span>${o.items}</span> — <b>${o.total}₽</b> <br>
-                <span class="badge st-${o.status}">${statuses[o.status]}</span>
-            </div>
-        `).join('') : "Заказов пока нет.";
+        renderChat();
     }
 
-    function changeStatus(id, st) {
-        orders.find(o => o.id === id).status = st;
-        localStorage.setItem('pap_global_orders', JSON.stringify(orders));
-        renderProfile();
+    function showPage(id) {
+        if(!currentUser && id !== 'shop') id = 'auth';
+        document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+        if(id === 'shop') renderShop();
+        if(id === 'profile') renderProfile();
     }
 
-    // --- Корзина и Оплата ---
-    function renderCart() {
-        const list = document.getElementById('cart-items');
-        let total = 0;
-        list.innerHTML = cart.map(i => {
-            total += i.price;
-            return `<div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05)">
-                <span>${i.name}</span><b>${i.price} ₽</b>
-            </div>`;
-        }).join('');
-        document.getElementById('total-price').innerText = `Итого: ${total} ₽`;
-    }
+    function logout() { sessionStorage.clear(); location.reload(); }
 
-    function showPayment() {
-        if(!cart.length) return;
-        const total = cart.reduce((s, i) => s + i.price, 0);
-        document.getElementById('pay-sum').innerText = `${total} ₽`;
-        document.getElementById('payment-modal').classList.remove('hidden');
-    }
-
-    function confirmOrder() {
-        const cardNum = document.getElementById('card-input').value.trim();
-        let total = parseInt(document.getElementById('pay-sum').innerText);
-        
-        if(validCards.includes(cardNum)) {
-            total = Math.round(total * 0.95);
-            alert("Карта Папина принята! Скидка 5% применена.");
-        }
-
-        orders.push({
-            id: Date.now(),
-            user: currentUser.name,
-            items: cart.map(i => i.name).join(", "),
-            total: total,
-            status: 0
-        });
-
-        localStorage.setItem('pap_global_orders', JSON.stringify(orders));
-        cart = [];
-        updateCartBtn();
-        document.getElementById('payment-modal').classList.add('hidden');
-        showPage('profile');
-    }
-
-    // --- Инит ---
-    if(currentUser) {
-        document.getElementById('nav-login').classList.add('hidden');
-        document.getElementById('nav-profile').classList.remove('hidden');
-        updateCartBtn();
-    }
+    // Старт
     renderShop();
+    if(currentUser) {
+        renderProfile();
+    } else {
+        showPage('shop');
+    }
 </script>
-
 </body>
 </html>
